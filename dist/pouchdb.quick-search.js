@@ -1,13 +1,13 @@
 "use strict";
-var mapReduce = require("pouchdb-mapreduce-no-ddocs");
+import mapReduce from "pouchdb-mapreduce-no-ddocs";
 Object.keys(mapReduce).forEach(function(key) {
   exports[key] = mapReduce[key];
 });
-var utils = require("./pouch-utils");
-var lunr = require("lunr");
-var uniq = require("uniq");
-var Promise = utils.Promise;
-var stringify = require("json-stable-stringify");
+import utils from "./pouch-utils";
+import lunr from "lunr";
+import uniq from "uniq";
+var PouchPromise = utils.PouchPromise;
+import stringify from "json-stable-stringify";
 var indexes = {};
 var TYPE_TOKEN_COUNT = "a";
 var TYPE_DOC_INFO = "b";
@@ -262,7 +262,7 @@ function calculateDocumentScores(queryTerms, termDFs, docIdsToFieldsToQueryTerms
   return results;
 }
 function applyIncludeDocs(pouch, rows) {
-  return Promise.all(rows.map(function(row) {
+  return PouchPromise.all(rows.map(function(row) {
     return pouch.get(row.id);
   })).then(function(docs) {
     docs.forEach(function(doc, i) {
@@ -275,8 +275,8 @@ function applyIncludeDocs(pouch, rows) {
 function applyHighlighting(pouch, opts, rows, fieldBoosts, docIdsToFieldsToQueryTerms) {
   var pre = opts.highlighting_pre || "<strong>";
   var post = opts.highlighting_post || "</strong>";
-  return Promise.all(rows.map(function(row) {
-    return Promise.resolve().then(function() {
+  return PouchPromise.all(rows.map(function(row) {
+    return PouchPromise.resolve().then(function() {
       if (row.doc) {
         return row.doc;
       }
